@@ -26,6 +26,9 @@
 
 #include <common.h>
 #include <asm/arch/dram.h>
+#include <asm/arch/clock.h>
+#include <asm/arch/mmc.h>
+#include <axp209.h>
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -36,6 +39,15 @@ int board_init(void)
 
 	return 0;
 }
+
+#ifdef CONFIG_DISPLAY_BOARDINFO
+int checkboard(void)
+{
+	printf("Board: %s\n", CONFIG_BOARD_NAME);
+
+	return 0;
+}
+#endif
 
 void dram_init_banksize(void)
 {
@@ -58,5 +70,26 @@ int board_mmc_init(bd_t * bis)
 	sunxi_mmc_init(CONFIG_MMC_SUNXI_SLOT);
 
 	return 0;
+}
+#endif
+
+#ifdef CONFIG_SPL_BUILD
+void sunxi_board_init(void)
+{
+	int power_failed = 0;
+
+	sunxi_dram_init();
+
+#ifdef CONFIG_AXP209_POWER
+	power_failed |= axp209_init();
+	power_failed |= axp209_set_dcdc2(1400);
+	power_failed |= axp209_set_dcdc3(1250);
+	power_failed |= axp209_set_ldo2(3000);
+	power_failed |= axp209_set_ldo3(2800);
+	power_failed |= axp209_set_ldo4(2800);
+#endif
+
+	if (!power_failed)
+		clock_set_pll1(1008000000);
 }
 #endif

@@ -33,6 +33,33 @@
 #define CONFIG_ALLWINNER	/* It's a Allwinner chip */
 #define	CONFIG_SUNXI		/* which is sunxi family */
 
+/* Define the board name to print upon bootup on the console */
+#ifdef CONFIG_A10_EVB
+#define CONFIG_BOARD_NAME	"A10-EVB"
+#endif
+#ifdef CONFIG_A13_EVB
+#define CONFIG_BOARD_NAME	"A13-EVB"
+#endif
+#ifdef CONFIG_A13_OLINUXINO
+#define CONFIG_BOARD_NAME	"A13-OLinuXino"
+#endif
+#ifdef CONFIG_CUBIEBOARD
+#define CONFIG_BOARD_NAME	"Cubieboard"
+#endif
+#ifdef CONFIG_CUBIEBOARD_512
+#define CONFIG_BOARD_NAME	"Cubieboard 512"
+#endif
+#ifdef CONFIG_HACKBERRY
+#define CONFIG_BOARD_NAME	"Hackberry"
+#endif
+#ifdef CONFIG_MELE_A1000
+#define CONFIG_BOARD_NAME	"Mele A1000"
+#endif
+
+#ifndef CONFIG_BOARD_NAME
+#error "Define CONFIG_BOARD_NAME for your board port!"
+#endif
+
 #include <asm/arch/cpu.h>	/* get chip and board defs */
 
 #define CONFIG_SYS_TEXT_BASE		0x4A000000
@@ -185,6 +212,34 @@
 #define CONFIG_CMD_EXT4		/* with this we can access ext4 bootfs */
 #define CONFIG_CMD_ZFS		/* with this we can access ZFS bootfs */
 
+/* test-only: remove unused code/defines */
+#if 0	/* Set in boards.cfg */
+#define CONFIG_SPL
+#endif
+
+#define CONFIG_SPL_FRAMEWORK
+#define CONFIG_SPL_BSS_START_ADDR	0x50000000
+#define CONFIG_SPL_BSS_MAX_SIZE		0x80000		/* 512 KB */
+
+#define CONFIG_SPL_TEXT_BASE		0x20		/* sram start+header */
+#define CONFIG_SPL_MAX_SIZE		0x8000		/* 32 KB */
+
+#define CONFIG_SPL_LIBCOMMON_SUPPORT
+#define CONFIG_SPL_LIBDISK_SUPPORT
+#define CONFIG_SPL_SERIAL_SUPPORT
+#define CONFIG_SPL_LIBGENERIC_SUPPORT
+#define CONFIG_SPL_MMC_SUPPORT
+
+/* end of 24KB in sram */
+#define LOW_LEVEL_SRAM_STACK		0x00006000
+#define CONFIG_SPL_STACK		LOW_LEVEL_SRAM_STACK
+#define CONFIG_SPL_LDSCRIPT "arch/arm/cpu/armv7/sunxi/u-boot-spl.lds"
+
+/* 32KB offset */
+#define CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR	64
+/* 200KB, enough for a full u-boot.bin */
+#define CONFIG_SYS_U_BOOT_MAX_SIZE_SECTORS	400
+
 #undef CONFIG_CMD_FPGA
 #undef CONFIG_CMD_NET
 #undef CONFIG_CMD_NFS
@@ -196,5 +251,9 @@
 #define CONFIG_SUNXI_I2C
 #define CONFIG_SYS_I2C_SLAVE		0x7f
 #define CONFIG_CMD_I2C
+
+/* PMU */
+#define CONFIG_SPL_POWER_SUPPORT
+#define CONFIG_AXP209_POWER
 
 #endif /* __CONFIG_H */
